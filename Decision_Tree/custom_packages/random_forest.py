@@ -16,10 +16,6 @@ record.
 """
 
 """
-This skeleton is provided to help you implement the assignment.You must 
-implement the existing functions as necessary. You may add new functions
-as long as they are called from within the given classes. 
-
 VERY IMPORTANT!
 Do NOT change the signature of the given functions.
 Do NOT change any part of the main function APART from the forest_size parameter.  

@@ -17,6 +17,7 @@ of each algorithms.
 LaTeX
 
 ## How to run the programs in this file
+Each Algorithm's implementation is stored 
 
 ## Deliverables
 1.  a file named README.txt containing instructions for running your code (see note below)  

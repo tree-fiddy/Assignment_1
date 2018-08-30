@@ -8,13 +8,17 @@ https://gist.github.com/iamaziz/02491e36490eb05a30f8
 https://codereview.stackexchange.com/questions/109089/id3-decision-tree-in-python
 '''
 
+from custom_packages.util import entropy, information_gain, partition_classes, try_partition_classes
+import numpy as np
+import ast
+import csv
 
 class DecisionTree(object):
     def __init__(self):
         # Initializing the tree as an empty dictionary or list, as preferred
         # self.tree = []
         self.tree = {}
-        self.threshold = 0.1
+        self.threshold = 0.6
 
     def learn(self, X, y):
         # TODO: Train the decision tree (self.tree) using the the sample X and labels y
@@ -32,17 +36,6 @@ class DecisionTree(object):
         self.split(self.tree, 1)
 
     # Select the best split point for a dataset
-    '''
-    Changelog:
-    Splitting function is now (ironically) split into two functions (try_split & get_split).  
-
-        try_split: 
-        Required efficiency gains by creating X_arr (numpy is much more efficient).
-        Another efficiency gain is minimizing looping.  Previously, we looped every column in X and then every
-        row in X.  Now, we only loop *once* every *unique* value in X.  
-
-
-    '''
 
     def try_split(self, X, y):
         b_index, b_value, b_gain = -1, -1, float('-inf')
@@ -83,7 +76,7 @@ class DecisionTree(object):
         return True
 
     # Create child splits for a node or make terminal
-    def split(self, node, depth, max_depth=5, min_size=5):
+    def split(self, node, depth, max_depth=100, min_size=5):
         left_X, right_X, left_y, right_y = node['groups_xleft'], node['groups_xright'], node['groups_yleft'], node[
             'groups_yright']
         # del(node['groups_xleft'], node['groups_xright'], node['groups_yleft'],  node['groups_yright'])
@@ -150,3 +143,5 @@ class DecisionTree(object):
                     return self.predict(node['right'], record)
                 else:
                     return node['right']
+
+
