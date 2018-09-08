@@ -3,6 +3,7 @@ import csv
 import numpy as np  # http://www.numpy.org
 import ast
 
+
 # This starter code does not run. You will have to add your changes and
 # turn in code that runs properly. 
 
@@ -131,7 +132,7 @@ def main():
 
     # TODO: Initialize according to your implementation
     # VERY IMPORTANT: Minimum forest_size should be 10
-    forest_size = 500
+    forest_size = 50
     
     # Initializing a random forest.
     randomForest = RandomForest(forest_size)
