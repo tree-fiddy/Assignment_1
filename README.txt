@@ -23,3 +23,15 @@
 ## Artificial Neural Networks (ANN)
 ### How to Run
 
+-   Download dataset from: UCI Credit Approval Data Set: http://archive.ics.uci.edu/ml/datasets/credit+approval
+-   Required Libraries:
+    -   import numpy as np
+    -   from sklearn.neural_network import MLPClassifier
+    -   import sklearn.model_selection as ms
+    -   import pandas as pd
+    -   from helper_packages.helpers import basicResults,makeTimingCurve,iterationLC
+    -   from sklearn.pipeline import Pipeline
+    -   from sklearn.preprocessing import StandardScaler
+    -   from sklearn.ensemble import RandomForestClassifier
+    -   from sklearn.feature_selection import SelectFromModel
+    -   from sklearn import preprocessing
