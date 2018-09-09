@@ -41,7 +41,7 @@
 \maketitle
 
 \begin{abstract}
-  The implementation, and basic fundamentals behind the following Machine Learning Algorithms will be discussed in detail:  
+  The implementation (in Python2.6 or Python3, depending on the algorithm), and basic fundamentals behind the following Machine Learning Algorithms will be discussed in detail:  
   \begin{enumerate}
     \item Decision trees with some form of pruning
     \item Neural Networks
@@ -51,14 +51,14 @@
       
     \end{enumerate}
 
-    For this assignment, Python is used, along with the necessary libraries associated within each topic.  The full code files are available on github\footnote{David Yun's Github: \url{https://github.com/tree-fiddy/Assignment_1}}
-    Please refer to the README.txt file for concise instructions on how to run the files associated with each aforementioned algorithms.  The full README.md file will guide a reader on how to use the files to better understand the objectives of this Assignment.  
+    The full code files are available on github\footnote{David Yun's Github: \url{https://github.com/tree-fiddy/Assignment_1}}
+    Please refer to the README.txt file for concise instructions on how to run the python files associated with each of the aforementioned algorithms.  The details behind the datasets, including where to download them, are provided in the README.  
 
 \end{abstract}
 
 \tableofcontents
 
-\section{Decision Trees: Setup Information}
+\section{Decision Trees}
 
 The implementation of Decision Trees was borrowed from my previous coursework in CSE6242 (Data Visualization) with minor tweaks.
 \textbf{Cross-Validation} is done without the need for a training-validation split here because of the use of Random Forests, which is a collection of decision trees.  Random forests allow us to create a robust model with less variance which results in a reduction in overfitting\footnote{By averaging several decision trees, the result is a less likely chance of overfitting}.  With proper pruning (Entropy thresholds \& Max Depth), one can further reduce the variance of the model and further decrease the chance of overfitting.  The \textbf{dataset} used is the UCI Credit Approval Dataset\footnote{UCI Credit Approval Data Set: \url{http://archive.ics.uci.edu/ml/datasets/credit+approval}}.  Some small adjustments were made to the dataset, such as removing rows where data was missing.  
@@ -158,7 +158,7 @@ As you can see, the model's accuracy reached an asymptote of around 50\% accurac
 
 You can also see that increasing the depth of the tree produced slightly better results \textbf{only} when we didn't set a threshold.  However, the computational time increased dramatically.  Moreover, setting entropy thresholds while allowing the tree to grow up to 100 levels deep caused this model to perform very poorly.
 
-\section{Model Complexity Analysis}
+\subsection{Model Complexity Analysis}
 Besides varying the Entropy Threshold \& Max Depth, we can also vary the \textbf{forest size} hyperparameter in our random forest.  Note here that we vary the hyperparameter, while holding the Entropy Threshold to 0.1 as supported by Figure \ref{fig:LearningCurves}.
 
 \begin{figure}
@@ -217,7 +217,7 @@ Besides varying the Entropy Threshold \& Max Depth, we can also vary the \textbf
 \end{figure}
 
 
-\section{Artificial Neural Networks:  Setup Information}
+\section{Artificial Neural Networks}
 
 \subsection{Learning Curves Analysis}
 To get a basic understanding of how our model performed, we first start off with a ``basic'' neural net with the following specifications:  (1) 1 Hidden Layer of size 30.  (2) Activation Function = 'relu' (rectified linear unit function, returns f(x) = max(0,x)) (3) L2 Regularization Alpha = 0.  The figure in Figure \ref{fig:ANN Learning Curves} shows the results with the aforementioned specifications, but letting our L2 Regularization/Penalty term to vary from 0 \& 10.
@@ -235,7 +235,8 @@ To get a basic understanding of how our model performed, we first start off with
   \caption{Learning Curves:  Testing vs. Training Sets w/ Varying Alpha (L2-Norm)}\label{fig:ANN Learning Curves}
 \end{figure}
 
-As you can see, specifying a larger L2 Penalty term reduces the accuracy of our both our Training and Test data.  While L2=0 produces a training set that is close to 100\% accuracy, the L2=10 rendition produces a training that is 86\% at it's best.     
+As you can see, specifying a larger L2 Penalty term reduces the accuracy of our both our Training and Test data.  While L2=0 produces a training set that is close to 100\% accuracy, the L2=10 rendition produces a training that is 86\% at it's best.
+
 \subsection{Model Complexity Analysis}
 We can further optimize our analysis by letting other parameters in our Neural Network to vary.  For one, we can add complexity by increasing both the depth and size of our hidden layers.
 
@@ -251,5 +252,44 @@ We can further optimize our analysis by letting other parameters in our Neural N
   \caption{Complexity Curves:  Testing vs. Training Sets w/ Varying Depth and Number of Hidden Layer Nodes}\label{fig:ANN Complexity Curves}
 \end{figure}
 
-The first figure in \ref{fig:ANN Complexity Curves} produces very promising results.  With 30 nodes in each of the 3 Hidden Layers, we achieve 100\% fit in the training set, and 86\% in the test set with only 32 weight-adjustment iterations (backpropogation).  However, one should be weary of these results, as it's highly suggestive of overfitting.  The speed in which the training accuracy improves is highly suggestive of this.  The right graph uses the $basicResults.best\_params\_$ method made available in scikitlearn to choose the best parameter for our ANN.  The best parameters are:  (1) L2 Penalty: 0.00316 (2) Hidden Layer Depth: 1 (3) Hidden Layer Size: 28 (4) Activation Function: Logistic.  Note that the figure on the right suggests we can reach a generalizable and accurate (88\% test accuracy rate with 99\% training accuracy rate) model with anywhere between 512-1024 weight-adjustment iterations.  
+The first figure in \ref{fig:ANN Complexity Curves} produces very promising results.  With 30 nodes in each of the 3 Hidden Layers, we achieve 100\% fit in the training set, and 86\% in the test set with only 32 weight-adjustment iterations (backpropogation).  However, one should be weary of these results, as it's highly suggestive of overfitting.  The speed in which the training accuracy improves is highly suggestive of this.  The right graph uses the $basicResults.best\_params\_$ method made available in scikitlearn to choose the best parameter for our ANN.  The best parameters are:  (1) L2 Penalty: 0.00316 (2) Hidden Layer Depth: 1 (3) Hidden Layer Size: 28 (4) Activation Function: Logistic.  Note that the figure on the right suggests we can reach a generalizable and accurate (88\% test accuracy rate with 99\% training accuracy rate) model with anywhere between 512-1024 weight-adjustment iterations.
+
+
+\section{k-Nearest Neighbors}
+Classifying hand gestures based on relative position across 3-dimensional coordinate plane is a perfect candidate for kNN.  By measuring the coordinates of markers attached to each finger as a hand gesture (fist, point, grab ...etc.), one can reasonably identify general characteristics related to finger positioning associated with gestures across different users (or, hands).
+
+\subsection{Learning Curves Analysis}
+To get a basic understanding of how our model performed, we first start off with a ``basic'' implementation of kNN with the following specifications:  (1) Default k of 5.  (2) Distance = Euclidian (3) Weighting distance of training data uniformly. The figure in Figure \ref{fig:ANN Learning Curves} shows the results with the aforementioned specifications, but letting our $k$ vary from 5 to the optimum $k$ outputted via $GridSearchCV.best\_params\_$.  
+
+
+\begin{figure} %
+  \centering
+  \subfigure[k = 5] {%
+    \label{fig:kNN Learning Curve k = 5}%
+    \includegraphics[height=2in]{KNN/output/kNN_Accuracy_Rates.png}}%
+  \hspace{8pt}%
+  \subfigure[L2 Regularization = 10]{%
+    \label{fig:kNN Learning Curve k = 43}%
+    \includegraphics[height=2in]{KNN/output/kNN_Accuracy_Rates2.png}}
+  \caption{Learning Curves:  Testing vs. Training Sets w/ Varying k}\label{fig:kNN Learning Curves}
+\end{figure}
+
+As you can see, specifying a larger L2 Penalty term reduces the accuracy of our both our Training and Test data.  While L2=0 produces a training set that is close to 100\% accuracy, the L2=10 rendition produces a training that is 86\% at it's best.
+
+\subsection{Model Complexity Analysis}
+We can further optimize our analysis by letting hyper-parameters in our kNN model to vary.  For one, we can add complexity by altering the distance measure (between Euclidean \& Manhattan) as well as adjusting our treatment of distance weights of training data.  By ``discounting'' training data points that are farther away from the query data point, we are effectively prioritizing the classification of the query point based on proximity, rather than prioritizing solely based on aggregate average classification of \textbf{all} training points.  
+
+\begin{figure} %
+  \centering
+  \subfigure[kNN w/ Manhattan, Uniform Distance] {%
+    \label{fig:kNN Complexity Curve Manhattan, Uniform Distance}%
+    \includegraphics[height=2in]{KNN/output/ANN_Accuracy_Rates3.png}}%
+  \hspace{8pt}%
+  \subfigure[kNN w/ Manhattan, Weighted Distance]{%
+    \label{fig:kNN Complexity Manhattan, Weighted Distance}%
+    \includegraphics[height=2in]{KNN/output/ANN_Accuracy_Rates4.png}}
+  \caption{Complexity Curves:  Testing vs. Training Sets w/ Varying Depth and Number of Hidden Layer Nodes}\label{fig:kNN Complexity Curves}
+\end{figure}
+
+The first figure in \ref{fig:kNN Complexity Curves} produces very promising results.  With 30 nodes in each of the 3 Hidden Layers, we achieve 100\% fit in the training set, and 86\% in the test set with only 32 weight-adjustment iterations (backpropogation).  However, one should be weary of these results, as it's highly suggestive of overfitting.  The speed in which the training accuracy improves is highly suggestive of this.  The right graph uses the $basicResults.best\_params\_$ method made available in scikitlearn to choose the best parameter for our ANN.  The best parameters are:  (1) L2 Penalty: 0.00316 (2) Hidden Layer Depth: 1 (3) Hidden Layer Size: 28 (4) Activation Function: Logistic.  Note that the figure on the right suggests we can reach a generalizable and accurate (88\% test accuracy rate with 99\% training accuracy rate) model with anywhere between 512-1024 weight-adjustment iterations.  
 \end{document}

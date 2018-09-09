@@ -10,7 +10,7 @@ import pandas as pd
 from helper_packages.helpers import basicResults,makeTimingCurve,iterationLC
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.ensemble import RandomForestClassifier
+
 from sklearn.feature_selection import SelectFromModel
 from sklearn import preprocessing
 

@@ -1,4 +1,6 @@
 # Assignment 1
+Note:  The majority of the codes used were borrowed from either previous coursework
+or from https://github.com/JonathanTay
 
 ## Decision Trees
 ### How to Run
@@ -24,14 +26,42 @@
 ### How to Run
 
 -   Download dataset from: UCI Credit Approval Data Set: http://archive.ics.uci.edu/ml/datasets/credit+approval
--   Required Libraries:
+-   Activate Python 3.6 with Required Libraries:
     -   import numpy as np
     -   from sklearn.neural_network import MLPClassifier
     -   import sklearn.model_selection as ms
     -   import pandas as pd
     -   from helper_packages.helpers import basicResults,makeTimingCurve,iterationLC
+        -   ** Custom Package downloaded from JonathanTay Github
     -   from sklearn.pipeline import Pipeline
     -   from sklearn.preprocessing import StandardScaler
     -   from sklearn.ensemble import RandomForestClassifier
     -   from sklearn.feature_selection import SelectFromModel
     -   from sklearn import preprocessing
+
+-   Execute the following command from the ANN directory:
+    -   python ANN.py &
+    -   Many .csv outputs will be provided that will be necessary when comparing
+        performance across different parameters
+
+## KNN
+### How to Run
+
+-   Data will download automatically by the following commad:
+    -   csv = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/00391/allUsers.lcl.csv')
+-   Activate Python 3.6 with Required Libraries:
+    -   import numpy as np
+    -   import sklearn.model_selection as ms
+    -   from sklearn.neighbors import KNeighborsClassifier as knnC
+    -   import pandas as pd
+    -   from helper_packages.helpers import basicResults,makeTimingCurve
+    -   from sklearn.pipeline import Pipeline
+    -   from sklearn.preprocessing import StandardScaler
+    -   from sklearn.ensemble import RandomForestClassifier
+    -   from sklearn.feature_selection import SelectFromModel
+
+-   Execute the following command from the ANN directory:
+    -   python ANN.py &
+    -   Many .csv outputs will be provided that will be necessary when comparing
+        performance across different parameters
+
