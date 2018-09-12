@@ -52,11 +52,14 @@
     \end{enumerate}
 
     The full code files are available on github\footnote{David Yun's Github: \url{https://github.com/tree-fiddy/Assignment_1}}
-    Please refer to the README.txt file for concise instructions on how to run the python files associated with each of the aforementioned algorithms.  The details behind the datasets, including where to download them, are provided in the README.  
+    Please refer to the README.txt file for concise instructions on how to run the python files associated with each of the aforementioned algorithms.  Further details behind the datasets, including where to download them, are provided in the README.  
 
 \end{abstract}
 
 \tableofcontents
+
+\section{Datasets}
+The two datasets used are 
 
 \section{Decision Trees}
 
@@ -220,76 +223,82 @@ Besides varying the Entropy Threshold \& Max Depth, we can also vary the \textbf
 \section{Artificial Neural Networks}
 
 \subsection{Learning Curves Analysis}
-To get a basic understanding of how our model performed, we first start off with a ``basic'' neural net with the following specifications:  (1) 1 Hidden Layer of size 30.  (2) Activation Function = 'relu' (rectified linear unit function, returns f(x) = max(0,x)) (3) L2 Regularization Alpha = 0.  The figure in Figure \ref{fig:ANN Learning Curves} shows the results with the aforementioned specifications, but letting our L2 Regularization/Penalty term to vary from 0 \& 10.
-
-
-\begin{figure} %
-  \centering
-  \subfigure[L2 Regularization = 0] {%
-    \label{fig:ANN Learning Curve L2 = 0}%
-    \includegraphics[height=2in]{Neural_Nets/output/ANN_Accuracy_Rates.png}}%
-  \hspace{8pt}%
-  \subfigure[L2 Regularization = 10]{%
-    \label{fig:ANN Learning Curve L2 = 10}%
-    \includegraphics[height=2in]{Neural_Nets/output/ANN_Accuracy_Rates2.png}}
-  \caption{Learning Curves:  Testing vs. Training Sets w/ Varying Alpha (L2-Norm)}\label{fig:ANN Learning Curves}
-\end{figure}
-
-As you can see, specifying a larger L2 Penalty term reduces the accuracy of our both our Training and Test data.  While L2=0 produces a training set that is close to 100\% accuracy, the L2=10 rendition produces a training that is 86\% at it's best.
-
-\subsection{Model Complexity Analysis}
-We can further optimize our analysis by letting other parameters in our Neural Network to vary.  For one, we can add complexity by increasing both the depth and size of our hidden layers.
+We can further optimize our analysis by letting other parameters in our Neural Network to vary.  For one, we can tune our parameters through increasing both the depth and size of our hidden layers.  Looking at figure \ref{fig:ANN Complexity Curves}, you can see that our ANN model with 3 hidden layers, each of size 30 performs slightly better at lower iterations, but worse at higher number of iterations, as compared to specifying 1 hidden layer of size 1 node.  The overall conclusion here is that the simple model with 1 hidden layer using 1 node actually performs better than one with more hidden layers at high number of iterations.  
 
 \begin{figure} %
   \centering
   \subfigure[3 Hidden Layers, 30 Nodes Each] {%
     \label{fig:ANN Complexity Curve Layer30x3}%
-    \includegraphics[height=2in]{Neural_Nets/output/ANN_Accuracy_Rates3.png}}%
+    \includegraphics[height=1.9in]{Neural_Nets/output/ANN_Accuracy_Rates3.png}}%
   \hspace{8pt}%
-  \subfigure[1 Hidden Layer, 28 Nodes]{%
+  \subfigure[1 Hidden Layer, 1 Node]{%
     \label{fig:ANN Complexity Curve}%
-    \includegraphics[height=2in]{Neural_Nets/output/ANN_Accuracy_Rates4.png}}
-  \caption{Complexity Curves:  Testing vs. Training Sets w/ Varying Depth and Number of Hidden Layer Nodes}\label{fig:ANN Complexity Curves}
+    \includegraphics[height=1.9in]{Neural_Nets/output/ANN_Accuracy_Rates4.png}}
+  \caption{Complexity Curves:  Testing vs. Validation Sets w/ Varying Depth and Number of Hidden Layer Nodes}\label{fig:ANN Complexity Curves}
 \end{figure}
 
-The first figure in \ref{fig:ANN Complexity Curves} produces very promising results.  With 30 nodes in each of the 3 Hidden Layers, we achieve 100\% fit in the training set, and 86\% in the test set with only 32 weight-adjustment iterations (backpropogation).  However, one should be weary of these results, as it's highly suggestive of overfitting.  The speed in which the training accuracy improves is highly suggestive of this.  The right graph uses the $basicResults.best\_params\_$ method made available in scikitlearn to choose the best parameter for our ANN.  The best parameters are:  (1) L2 Penalty: 0.00316 (2) Hidden Layer Depth: 1 (3) Hidden Layer Size: 28 (4) Activation Function: Logistic.  Note that the figure on the right suggests we can reach a generalizable and accurate (88\% test accuracy rate with 99\% training accuracy rate) model with anywhere between 512-1024 weight-adjustment iterations.
 
+The first figure in \ref{fig:ANN Complexity Curves} produces very promising results.  With 30 nodes in each of the 3 Hidden Layers, we can only achieve 80\% fit in the training set, and 80\% in the test set no matter the number of weight-adjustment iterations (backpropogation).  The performance is quite poor all around.  The right graph uses the $basicResults.best\_params\_$ method made available in scikitlearn to choose the best parameter for our ANN.  The best parameters are:  (1) L2 Penalty: 0.00316 (2) Hidden Layer Depth: 1 (3) Hidden Layer Size: 1 (4) Activation Function: RELU.  Note that the figure on the right suggests we can reach a generalizable and accurate (88\% test accuracy rate with 90\% training accuracy rate) model with anywhere between 1,024 to 2048 weight-adjustment iterations.  Figure \ref{fig:ANN Complexity Curve} also highlights the importance of back-propogation.  Giving our model time to make iterative adjustments to the weights drastically improves the model.   
+
+\subsection{Model Complexity Analysis}
+To get a basic understanding of how our model performed, we first start off with a ``basic'' neural net with the following specifications:  (1) 1 Hidden Layer of size 30.  (2) Activation Function = 'relu' (rectified linear unit function, returns f(x) = max(0,x)) (3) L2 Regularization Alpha = 0.  The figure in Figure \ref{fig:ANN Learning Curves} shows the results with the aforementioned specifications, but letting our L2 Regularization/Penalty term to vary between 0 \& 10.
+Recall that the L2 Norm is essentially a squared error specification, and by it's nature, penalizes weights in a manner to reduce the likelihood of fitting the noise of the training data.  
+
+\begin{figure} %
+  \centering
+  \subfigure[L2 Regularization = 0] {%
+    \label{fig:ANN Learning Curve L2 = 0}%
+    \includegraphics[height=1.9in]{Neural_Nets/output/ANN_Accuracy_Rates.png}}%
+  \hspace{8pt}%
+  \subfigure[L2 Regularization = 10]{%
+    \label{fig:ANN Learning Curve L2 = 10}%
+    \includegraphics[height=1.9in]{Neural_Nets/output/ANN_Accuracy_Rates2.png}}
+  \caption{Learning Curves:  Training vs. Validation Sets w/ Varying Alpha (L2-Norm)}\label{fig:ANN Learning Curves}
+\end{figure}
 
 \section{k-Nearest Neighbors}
 Classifying hand gestures based on relative position across 3-dimensional coordinate plane is a perfect candidate for kNN.  By measuring the coordinates of markers attached to each finger as a hand gesture (fist, point, grab ...etc.), one can reasonably identify general characteristics related to finger positioning associated with gestures across different users (or, hands).
 
 \subsection{Learning Curves Analysis}
-To get a basic understanding of how our model performed, we first start off with a ``basic'' implementation of kNN with the following specifications:  (1) Default k of 5.  (2) Distance = Euclidian (3) Weighting distance of training data uniformly. The figure in Figure \ref{fig:ANN Learning Curves} shows the results with the aforementioned specifications, but letting our $k$ vary from 5 to the optimum $k$ outputted via $GridSearchCV.best\_params\_$.  
+To get a sense of how effectively our kNN model learns across different sizes of our training set, we can compare the performance of our model as we increase the training set.  We will compare the outcomes of our model under 2 scenarios, where each scenario uses a different value for our hyper-parameter $k$.  We first start off with a ``basic'' implementation of kNN with the following specifications:  (1) Default k of 10.  (2) Distance = Manhattan (3) Weighting distance of training data uniformly. We then compare our results with the ``best'' implementation, as chosen by $GridSearchCV.best\_params\_$.  It turns out, $ k=1$, using the Manhattan distance weighted uniformly performs the best.  The figure in Figure \ref{fig:kNN Learning Curves} shows the results with the aforementioned specifications, but letting our $k$ vary from 10 to the optimum $k=1$ outputted via $GridSearchCV.best\_params\_$.  As you can see, setting $k=1$ generated perfect training sets (100\% training accuracy across all sample sizes).  In other words, our 1-NN perfectly classified our training data set.  This is largely expected, as 1-NN has low bias, and high variance, and generally produces results suggesting overfitting.  
 
 
 \begin{figure} %
   \centering
-  \subfigure[k = 5] {%
-    \label{fig:kNN Learning Curve k = 5}%
+  \subfigure[k = 10] {%
+    \label{fig:kNN Learning Curve k = 10}%
     \includegraphics[height=2in]{KNN/output/kNN_Accuracy_Rates.png}}%
   \hspace{8pt}%
-  \subfigure[L2 Regularization = 10]{%
-    \label{fig:kNN Learning Curve k = 43}%
+  \subfigure[k = 1]{%
+    \label{fig:kNN Learning Curve k = 1}%
     \includegraphics[height=2in]{KNN/output/kNN_Accuracy_Rates2.png}}
-  \caption{Learning Curves:  Testing vs. Training Sets w/ Varying k}\label{fig:kNN Learning Curves}
+  \caption{Learning Curves:  Training vs. Validation Accuracy w/ Varying Training Set Size}\label{fig:kNN Learning Curves}
 \end{figure}
 
-As you can see, specifying a larger L2 Penalty term reduces the accuracy of our both our Training and Test data.  While L2=0 produces a training set that is close to 100\% accuracy, the L2=10 rendition produces a training that is 86\% at it's best.
+As you can see in figure \ref{fig:kNN Learning Curves}, our validation accuracy experiences a drastic improvement in accuracy as our training set size reaches ~6000.  Furthermore, we see overfitting occurring at both levels of $k=1$ and $k=10$, evidenced by the near perfect training scores.  However, the average validation accuracy, which was generated using 5-fold cross validation, suggests our results to be very robust for both values of $k$, as evidenced in the very similar results.  Lastly, the steep jump in performance when reserving only 10\% of our data suggests we can learn the underlying behavior of our data with relatively little data.  It is worth noting here that using 70\% of our training data generated a 98\% accuracy rate for $k=1$, and 96\% accuracy for $k=10$ - a small difference between our two $k$s.
 
 \subsection{Model Complexity Analysis}
-We can further optimize our analysis by letting hyper-parameters in our kNN model to vary.  For one, we can add complexity by altering the distance measure (between Euclidean \& Manhattan) as well as adjusting our treatment of distance weights of training data.  By ``discounting'' training data points that are farther away from the query data point, we are effectively prioritizing the classification of the query point based on proximity, rather than prioritizing solely based on aggregate average classification of \textbf{all} training points.  
+We can add complexity by altering the distance measure (between Euclidean \& Manhattan) as well as adjusting our treatment of distance weights of training data.  By ``discounting'' training data points that are farther away from the query data point, we are effectively prioritizing the classification of the query point based on proximity, rather than prioritizing solely based on aggregate average classification of \textbf{all} training points (which is the case in the ``uniform'' distance weighting scenario).  
 
 \begin{figure} %
   \centering
-  \subfigure[kNN w/ Manhattan, Uniform Distance] {%
-    \label{fig:kNN Complexity Curve Manhattan, Uniform Distance}%
-    \includegraphics[height=2in]{KNN/output/ANN_Accuracy_Rates3.png}}%
-  \hspace{8pt}%
   \subfigure[kNN w/ Manhattan, Weighted Distance]{%
     \label{fig:kNN Complexity Manhattan, Weighted Distance}%
-    \includegraphics[height=2in]{KNN/output/ANN_Accuracy_Rates4.png}}
-  \caption{Complexity Curves:  Testing vs. Training Sets w/ Varying Depth and Number of Hidden Layer Nodes}\label{fig:kNN Complexity Curves}
+    \includegraphics[height=2in]{KNN/output/kNN_Accuracy_Rates4.png}}
+  \hspace{8pt}%
+  \subfigure[kNN w/ Manhattan, Weighted Distance (k=5000)]{%
+    \label{fig:kNN Complexity Manhattan, Weighted Distance (k=5000)}%
+    \includegraphics[height=2in]{KNN/output/kNN_Accuracy_Rates5.png}}
+  \caption{Complexity Curves:  Training vs. Validation Accuracy w/ Varying k }\label{fig:kNN Complexity Curves}
+
+ 
 \end{figure}
 
-The first figure in \ref{fig:kNN Complexity Curves} produces very promising results.  With 30 nodes in each of the 3 Hidden Layers, we achieve 100\% fit in the training set, and 86\% in the test set with only 32 weight-adjustment iterations (backpropogation).  However, one should be weary of these results, as it's highly suggestive of overfitting.  The speed in which the training accuracy improves is highly suggestive of this.  The right graph uses the $basicResults.best\_params\_$ method made available in scikitlearn to choose the best parameter for our ANN.  The best parameters are:  (1) L2 Penalty: 0.00316 (2) Hidden Layer Depth: 1 (3) Hidden Layer Size: 28 (4) Activation Function: Logistic.  Note that the figure on the right suggests we can reach a generalizable and accurate (88\% test accuracy rate with 99\% training accuracy rate) model with anywhere between 512-1024 weight-adjustment iterations.  
+Using the figure \ref{fig:kNN Learning Curve k = 10} as a reference (which uses Uniform Distancing), you can see a subtle, yet important change in the accuracy of our validation set when using Weighted Distance as a hyper-parameter.  Namely, figure \ref{fig:kNN Complexity Manhattan, Weighted Distance} shows decreased performance for almost every training set sample size, reaching a maximum validation accuracy rate of 88\%.  This suggests that Uniform distancing provides better performance, as opposed to discounting data points further away from a test point's nearest neighbor.  Logically, this makes sense- a single instance of a hand gesture is subject to measurement bias.  By discounting all the other finger marker measurements, which also was subjected to measurement bias, we are not letting the model take this type of error into account.  Instead, the distance weighted model is simply placing a higher emphasis on the closest points to make an assessment of hand posture- a misplaced emphasis which most likely took outlier data points from other hand gesture readings, and misclassified our query point as such.  Lastly, it is worth noting that no combination of parameter + hyper-parameter tuning was able to correct the overfitting issue.  My initial hypothesis was to blow up k to 5000 as shown in \ref{fig:kNN w/ Manhattan, Weighted Distance (k=5000)}, but it didn't do much- it just nearly blew up my laptop.  
+
 \end{document}
+
+
+\section{Boosting}
+
+\subsection{Learning Curves Analysis}

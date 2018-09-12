@@ -17,7 +17,7 @@ def basicResults(clfObj, trgX, trgY, tstX, tstY, params, clf_type=None, dataset=
     np.random.seed(55)
     if clf_type is None or dataset is None:
         raise
-    cv = ms.GridSearchCV(clfObj, n_jobs=1, param_grid=params, refit=True, verbose=10, cv=5, scoring=my_scorer)
+    cv = ms.GridSearchCV(clfObj, n_jobs=10, param_grid=params, refit=True, verbose=10, cv=5, scoring=my_scorer)
     cv.fit(trgX, trgY)
     regTable = pd.DataFrame(cv.cv_results_)
     regTable.to_csv('./output/{}_{}_reg.csv'.format(clf_type, dataset), index=False)
@@ -26,7 +26,7 @@ def basicResults(clfObj, trgX, trgY, tstX, tstY, params, clf_type=None, dataset=
         f.write('{},{},{},{}\n'.format(clf_type, dataset, test_score, cv.best_params_))
     N = trgY.shape[0]
     curve = ms.learning_curve(cv.best_estimator_, trgX, trgY, cv=5,
-                              train_sizes=[50, 100] + [int(N * x / 10) for x in range(1, 8)], verbose=10,
+                              train_sizes=[500, 100] + [int(N * x / 10) for x in range(1, 8)], verbose=10,
                               scoring=my_scorer)
     curve_train_scores = pd.DataFrame(index=curve[0], data=curve[1])
     curve_test_scores = pd.DataFrame(index=curve[0], data=curve[2])
@@ -50,27 +50,3 @@ def makeTimingCurve(X, Y, clf, clfName, dataset):
     out = pd.DataFrame(out)
     out.to_csv('./output/{}_{}_timing.csv'.format(clfName, dataset))
     return
-
-def iterationLC(clfObj,trgX,trgY,tstX,tstY,params,clf_type=None,dataset=None):
-    np.random.seed(55)
-    if clf_type is None or dataset is None:
-        raise
-    cv = ms.GridSearchCV(clfObj,n_jobs=1,param_grid=params,refit=True,verbose=10,cv=5,scoring=my_scorer)
-    cv.fit(trgX,trgY)
-    regTable = pd.DataFrame(cv.cv_results_)
-    regTable.to_csv('./output/ITER_base_{}_{}.csv'.format(clf_type,dataset),index=False)
-    d = defaultdict(list)
-    name = list(params.keys())[0]
-    for value in list(params.values())[0]:
-        d['param_{}'.format(name)].append(value)
-        clfObj.set_params(**{name:value})
-        clfObj.fit(trgX,trgY)
-        pred = clfObj.predict(trgX)
-        d['train acc'].append(balanced_accuracy(trgY,pred))
-        clfObj.fit(trgX,trgY)
-        pred = clfObj.predict(tstX)
-        d['test acc'].append(balanced_accuracy(tstY,pred))
-        print(value)
-    d = pd.DataFrame(d)
-    d.to_csv('./output/ITERtestSET_{}_{}.csv'.format(clf_type,dataset),index=False)
-    return cv

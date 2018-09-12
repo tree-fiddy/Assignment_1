@@ -45,12 +45,12 @@ params_approved = {'MLP__activation':['relu','logistic'],'MLP__alpha':alphas,'ML
 approved_clf = basicResults(pipeA,approved_trgX,approved_trgY,approved_tstX,approved_tstY,params_approved,'ANN','approved')
 
 #madelon_final_params = {'MLP__hidden_layer_sizes': (500,), 'MLP__activation': 'logistic', 'MLP__alpha': 10.0}
-#approved_final_params ={'MLP__hidden_layer_sizes': (28, 28, 28), 'MLP__activation': 'logistic', 'MLP__alpha': 0.0031622776601683794}
 
+# approved_final_params ={'MLP__hidden_layer_sizes': (30,30,30), 'MLP__activation': 'logistic', 'MLP__alpha': 0.0031622776601683794}
 approved_final_params =approved_clf.best_params_
 approved_OF_params =approved_final_params.copy()
 approved_OF_params['MLP__alpha'] = 0.0031622776601683794
-approved_OF_params['MLP__hidden_layer_sizes'] = (28)
+approved_OF_params['MLP__hidden_layer_sizes'] = (1)
 
 pipeA.set_params(**approved_final_params)
 pipeA.set_params(**{'MLP__early_stopping':False})
@@ -60,7 +60,7 @@ makeTimingCurve(approvedX,approvedY,pipeA,'ANN','approved')
 # pipeM.set_params(**{'MLP__early_stopping':False})
 # iterationLC(pipeM,madelon_trgX,madelon_trgY,madelon_tstX,madelon_tstY,{'MLP__max_iter':[2**x for x in range(12)]+[2100,2200,2300,2400,2500,2600,2700,2800,2900,3000]},'ANN','madelon')
 pipeA.set_params(**approved_final_params)
-pipeA.set_params(**{'MLP__early_stopping':True})
+pipeA.set_params(**{'MLP__early_stopping':False})
 iterationLC(pipeA,approved_trgX,approved_trgY,approved_tstX,approved_tstY,{'MLP__max_iter':[2**x for x in range(12)]+[2100,2200,2300,2400,2500,2600,2700,2800,2900,3000]},'ANN','approved')
 
 # pipeM.set_params(**madelon_OF_params)

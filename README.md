@@ -5,6 +5,10 @@ compare their performance results.  Namely, we will discuss the
 implementation, error rates (and calculations), and general usefulness
 of each algorithms.
 
+## Datasets Used
+1.  Credit Approval Data
+2.  [Hand Posture Data](https://archive.ics.uci.edu/ml/datasets/MoCap+Hand+Postures#)
+
 ## Algorithms implemented
 1.  Decision Trees (with some form of pruning)
     -  Will incorporate the ID3 search algorithm for determining nodes
@@ -17,7 +21,8 @@ of each algorithms.
 LaTeX
 
 ## How to run the programs in this file
-Each Algorithm's implementation is stored 
+Each Algorithm's implementation is stored in their respective directories.  
+
 
 ## Deliverables
 1.  a file named README.txt containing instructions for running your code (see note below)  
