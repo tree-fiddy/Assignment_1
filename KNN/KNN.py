@@ -16,9 +16,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SelectFromModel
 
-from sklearn import preprocessing
-
-
 ## Hand Gesture Data
 csv = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/00391/allUsers.lcl.csv')
 csv.replace('?', 0, inplace=True)
