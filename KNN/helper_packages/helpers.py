@@ -5,7 +5,6 @@ import pandas as pd
 from collections import defaultdict
 from sklearn.metrics import make_scorer, accuracy_score
 from sklearn.utils import compute_sample_weight
-from sklearn.tree import DecisionTreeClassifier as dtclf
 
 def balanced_accuracy(truth,pred):
     wts = compute_sample_weight('balanced',truth)
