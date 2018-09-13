@@ -48,6 +48,7 @@ pipeM = Pipeline([('Scale',StandardScaler()),
 # params_posture= {'KNN__metric':['manhattan','euclidean'],'KNN__n_neighbors':np.arange(1,51,5),'KNN__weights':['uniform','distance']}
 params_posture= {'KNN__metric':['manhattan','euclidean'],'KNN__n_neighbors':[np.arange(1,51,5)],'KNN__weights':['uniform','distance']}
 
+
 posture_clf = basicResults(pipeM,
                            posture_trgX,
                            posture_trgY,
