@@ -4,7 +4,6 @@ Code borrowed from Jonathan Tay
 https://github.com/JonathanTay/CS-7641-assignment-1
 
 Performs k-NN on Hand Gesture Posture Data
-
 """
 
 import numpy as np
