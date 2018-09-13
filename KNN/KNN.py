@@ -46,7 +46,7 @@ pipeM = Pipeline([('Scale',StandardScaler()),
                  ('KNN',knnC())])
 
 # params_posture= {'KNN__metric':['manhattan','euclidean'],'KNN__n_neighbors':np.arange(1,51,5),'KNN__weights':['uniform','distance']}
-params_posture= {'KNN__metric':['manhattan'],'KNN__n_neighbors':[500],'KNN__weights':['uniform','distance']}
+params_posture= {'KNN__metric':['manhattan','euclidean'],'KNN__n_neighbors':[np.arange(1,51,5)],'KNN__weights':['uniform','distance']}
 
 posture_clf = basicResults(pipeM,
                            posture_trgX,
@@ -55,8 +55,8 @@ posture_clf = basicResults(pipeM,
                            posture_tstY,
                            params_posture,'KNN','posture')
 
-posture_final_params={'KNN__n_neighbors': 500, 'KNN__weights': 'distance', 'KNN__p': 1}
-# posture_final_params=posture_clf.best_params_
+# posture_final_params={'KNN__n_neighbors': 500, 'KNN__weights': 'distance', 'KNN__p': 1}
+posture_final_params=posture_clf.best_params_
 pipeM.set_params(**posture_final_params)
 makeTimingCurve(postureX,postureY,pipeM,'KNN','posture')
 
