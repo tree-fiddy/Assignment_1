@@ -1,40 +1,39 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Jan 20 14:23:40 2017
-
-@author: JTay
+Code borrowed from Jonathan Tay
+https://github.com/JonathanTay/CS-7641-assignment-1
 """
-
-
 import sklearn.model_selection as ms
 from sklearn.ensemble import AdaBoostClassifier
-from helpers import dtclf_pruned
 import pandas as pd
-from helpers import  basicResults,makeTimingCurve,iterationLC
+from helper_packages.helpers import  basicResults,makeTimingCurve,iterationLC,dtclf_pruned
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SelectFromModel
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
+## Hand Gesture Data
+csv = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/00391/allUsers.lcl.csv')
+csv.replace('?', 0, inplace=True)
 
+# Only the first 5 vars get converted to float (others being kept as 'object')
+# This fixes that problem
+csv = csv.astype(float)
+csv['Class'] = csv['Class'].astype(int)
 
-adult = pd.read_hdf('datasets.hdf','adult')        
-adultX = adult.drop('income',1).copy().values
-adultY = adult['income'].copy().values
+# Convert to HDF5 for high efficiency memory usage
+filename = '/tmp/posture_data.h5'
+df = csv.to_hdf(filename, 'data', mode='w', format='table')
+posture = pd.read_hdf('/tmp/posture_data.h5')
+posture = posture.iloc[1:]
+postureX = posture.drop('Class',axis=1).copy().values
+postureY = posture['Class'].copy().values
 
-madelon = pd.read_hdf('datasets.hdf','madelon')        
-madelonX = madelon.drop('Class',1).copy().values
-madelonY = madelon['Class'].copy().values
-
+# Create List of Alphas
 alphas = [-1,-1e-3,-(1e-3)*10**-0.5, -1e-2, -(1e-2)*10**-0.5,-1e-1,-(1e-1)*10**-0.5, 0, (1e-1)*10**-0.5,1e-1,(1e-2)*10**-0.5,1e-2,(1e-3)*10**-0.5,1e-3]
 
+posture_trgX, posture_tstX, posture_trgY, posture_tstY = ms.train_test_split(postureX, postureY, test_size=0.3, random_state=0,stratify=postureY)
 
-adult_trgX, adult_tstX, adult_trgY, adult_tstY = ms.train_test_split(adultX, adultY, test_size=0.3, random_state=0,stratify=adultY)     
-madelon_trgX, madelon_tstX, madelon_trgY, madelon_tstY = ms.train_test_split(madelonX, madelonY, test_size=0.3, random_state=0,stratify=madelonY)     
-
-
-
-madelon_base = dtclf_pruned(criterion='gini',class_weight='balanced',random_state=55)                
 adult_base = dtclf_pruned(criterion='entropy',class_weight='balanced',random_state=55)
 OF_base = dtclf_pruned(criterion='gini',class_weight='balanced',random_state=55)                
 #paramsA= {'Boost__n_estimators':[1,2,5,10,20,30,40,50],'Boost__learning_rate':[(2**x)/100 for x in range(8)]+[1]}
