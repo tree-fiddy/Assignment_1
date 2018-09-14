@@ -26,7 +26,7 @@ filename = '/tmp/posture_data.h5'
 df = csv.to_hdf(filename, 'data', mode='w', format='table')
 posture = pd.read_hdf('/tmp/posture_data.h5')
 posture = posture.iloc[1:]
-postureX = posture.drop('Class',axis=1).copy().values
+postureX = posture.drop(['Class','User'],axis=1).copy().values
 postureY = posture['Class'].copy().values
 
 # Create List of Alphas
@@ -34,59 +34,55 @@ alphas = [-1,-1e-3,-(1e-3)*10**-0.5, -1e-2, -(1e-2)*10**-0.5,-1e-1,-(1e-1)*10**-
 
 posture_trgX, posture_tstX, posture_trgY, posture_tstY = ms.train_test_split(postureX, postureY, test_size=0.3, random_state=0,stratify=postureY)
 
-adult_base = dtclf_pruned(criterion='entropy',class_weight='balanced',random_state=55)
-OF_base = dtclf_pruned(criterion='gini',class_weight='balanced',random_state=55)                
+posture_base = dtclf_pruned(criterion='entropy',class_weight='balanced',random_state=55)
+posture_OF_base = dtclf_pruned(criterion='gini',class_weight='balanced',random_state=55)
 #paramsA= {'Boost__n_estimators':[1,2,5,10,20,30,40,50],'Boost__learning_rate':[(2**x)/100 for x in range(8)]+[1]}
-paramsA= {'Boost__n_estimators':[1,2,5,10,20,30,45,60,80,100],
+params_posture= {'Boost__n_estimators':[1, 2, 5, 10, 20, 30, 45, 60, 80, 100],
           'Boost__base_estimator__alpha':alphas}
+
 #paramsM = {'Boost__n_estimators':[1,2,5,10,20,30,40,50,60,70,80,90,100],
 #           'Boost__learning_rate':[(2**x)/100 for x in range(8)]+[1]}
 
-paramsM = {'Boost__n_estimators':[1,2,5,10,20,30,45,60,80,100],
+#paramsM = {'Boost__n_estimators':[1,2,5,10,20,30,45,60,80,100],
            'Boost__base_estimator__alpha':alphas}
                                    
          
-madelon_booster = AdaBoostClassifier(algorithm='SAMME',learning_rate=1,base_estimator=madelon_base,random_state=55)
-adult_booster = AdaBoostClassifier(algorithm='SAMME',learning_rate=1,base_estimator=adult_base,random_state=55)
-OF_booster = AdaBoostClassifier(algorithm='SAMME',learning_rate=1,base_estimator=OF_base,random_state=55)
+#posture_booster = AdaBoostClassifier(algorithm='SAMME',learning_rate=1,base_estimator=posture_base,random_state=55)
+posture_booster = AdaBoostClassifier(algorithm='SAMME',learning_rate=1,base_estimator=posture_base,random_state=55)
+posture_OF_booster = AdaBoostClassifier(algorithm='SAMME',learning_rate=1,base_estimator=posture_OF_base,random_state=55)
 
 pipeM = Pipeline([('Scale',StandardScaler()),
                  ('Cull1',SelectFromModel(RandomForestClassifier(random_state=1),threshold='median')),
                  ('Cull2',SelectFromModel(RandomForestClassifier(random_state=2),threshold='median')),
                  ('Cull3',SelectFromModel(RandomForestClassifier(random_state=3),threshold='median')),
                  ('Cull4',SelectFromModel(RandomForestClassifier(random_state=4),threshold='median')),
-                 ('Boost',madelon_booster)])
+                 ('Boost',posture_booster)])
 
-pipeA = Pipeline([('Scale',StandardScaler()),                
-                 ('Boost',adult_booster)])
+# pipeA = Pipeline([('Scale',StandardScaler()),
+#                  ('Boost',adult_booster)])
+#
+posture_clf = basicResults(pipeM,posture_trgX,posture_trgY,posture_tstX,posture_tstY,params_posture,'Boost','posture')
+# adult_clf = basicResults(pipeA, adult_trgX, adult_trgY, adult_tstX, adult_tstY, params_posture, 'Boost', 'adult')
 
 #
-madelon_clf = basicResults(pipeM,madelon_trgX,madelon_trgY,madelon_tstX,madelon_tstY,paramsM,'Boost','madelon')        
-adult_clf = basicResults(pipeA,adult_trgX,adult_trgY,adult_tstX,adult_tstY,paramsA,'Boost','adult')        
-
 #
-#
-#madelon_final_params = {'n_estimators': 20, 'learning_rate': 0.02}
+#posture_final_params = {'n_estimators': 20, 'learning_rate': 0.02}
 #adult_final_params = {'n_estimators': 10, 'learning_rate': 1}
 #OF_params = {'learning_rate':1}
 
-madelon_final_params = madelon_clf.best_params_
-adult_final_params = adult_clf.best_params_
+posture_final_params = posture_clf.best_params_
+# adult_final_params = adult_clf.best_params_
 OF_params = {'Boost__base_estimator__alpha':-1, 'Boost__n_estimators':50}
 
 ##
-pipeM.set_params(**madelon_final_params)
-pipeA.set_params(**adult_final_params)
-makeTimingCurve(madelonX,madelonY,pipeM,'Boost','madelon')
-makeTimingCurve(adultX,adultY,pipeA,'Boost','adult')
+pipeM.set_params(**posture_final_params)
+# pipeA.set_params(**adult_final_params)
+makeTimingCurve(postureX,postureY,pipeM,'Boost','posture')
+# makeTimingCurve(adultX,adultY,pipeA,'Boost','adult')
 #
-pipeM.set_params(**madelon_final_params)
-iterationLC(pipeM,madelon_trgX,madelon_trgY,madelon_tstX,madelon_tstY,{'Boost__n_estimators':[1,2,5,10,20,30,40,50,60,70,80,90,100]},'Boost','madelon')        
-pipeA.set_params(**adult_final_params)
-iterationLC(pipeA,adult_trgX,adult_trgY,adult_tstX,adult_tstY,{'Boost__n_estimators':[1,2,5,10,20,30,40,50]},'Boost','adult')                
+pipeM.set_params(**posture_final_params)
+iterationLC(pipeM,posture_trgX,posture_trgY,posture_tstX,posture_tstY,{'Boost__n_estimators':[1,2,5,10,20,30,40,50,60,70,80,90,100]},'Boost','posture')
+# pipeA.set_params(**adult_final_params)
+# iterationLC(pipeA,adult_trgX,adult_trgY,adult_tstX,adult_tstY,{'Boost__n_estimators':[1,2,5,10,20,30,40,50]},'Boost','adult')
 pipeM.set_params(**OF_params)
-iterationLC(pipeM,madelon_trgX,madelon_trgY,madelon_tstX,madelon_tstY,{'Boost__n_estimators':[1,2,5,10,20,30,40,50,60,70,80,90,100]},'Boost_OF','madelon')                
-pipeA.set_params(**OF_params)
-iterationLC(pipeA,madelon_trgX,madelon_trgY,madelon_tstX,madelon_tstY,{'Boost__n_estimators':[1,2,5,10,20,30,40,50]},'Boost_OF','adult')                
-
-             
+iterationLC(pipeM,posture_trgX,posture_trgY,posture_tstX,posture_tstY,{'Boost__n_estimators':[1,2,5,10,20,30,40,50,60,70,80,90,100]},'Boost_OF','posture')
