@@ -41,8 +41,7 @@ pipeM = Pipeline([('Scale',StandardScaler()),
                  ('Cull4',SelectFromModel(RandomForestClassifier(),threshold='median')),
                  ('KNN',knnC())])
 
-# params_posture= {'KNN__metric':['manhattan','euclidean'],'KNN__n_neighbors':np.arange(1,51,5),'KNN__weights':['uniform','distance']}
-params_posture= {'KNN__metric':['manhattan','euclidean'],'KNN__n_neighbors':[np.arange(1,51,5)],'KNN__weights':['uniform','distance']}
+params_posture= {'KNN__metric':['manhattan','euclidean'],'KNN__n_neighbors':np.arange(1,51,5),'KNN__weights':['uniform','distance']}
 
 posture_clf = basicResults(pipeM,
                            posture_trgX,
@@ -50,7 +49,9 @@ posture_clf = basicResults(pipeM,
                            posture_tstX,
                            posture_tstY,
                            params_posture,'KNN','posture')
-
+"""
+Toggle here to mess around with learning/complexity.
+"""
 # posture_final_params={'KNN__n_neighbors': 500, 'KNN__weights': 'distance', 'KNN__p': 1}
 posture_final_params=posture_clf.best_params_
 pipeM.set_params(**posture_final_params)
@@ -60,7 +61,8 @@ makeTimingCurve(postureX,postureY,pipeM,'KNN','posture')
 # adultX = adult.drop('income',1).copy().values
 # adultY = adult['income'].copy().values
 
-# adult_trgX, adult_tstX, adult_trgY, adult_tstY = ms.train_test_split(adultX, adultY, test_size=0.3, random_state=0,stratify=adultY)
+adult_trgX, adult_tstX, adult_trgY, adult_tstY = \
+    ms.train_test_split(adultX, adultY, test_size=0.3, random_state=0,stratify=adultY)
 # d = adultX.shape[1]
 
 # pipeA = Pipeline([('Scale',StandardScaler()),
@@ -69,7 +71,7 @@ makeTimingCurve(postureX,postureY,pipeM,'KNN','posture')
 # adult_clf = basicResults(pipeA,adult_trgX,adult_trgY,adult_tstX,adult_tstY,params_adult,'KNN','adult')
 
 
-#adult_final_params={'KNN__n_neighbors': 142, 'KNN__p': 1, 'KNN__weights': 'uniform'}
+# adult_final_params={'KNN__n_neighbors': 142, 'KNN__p': 1, 'KNN__weights': 'uniform'}
 # adult_final_params=adult_clf.best_params_
 # pipeA.set_params(**adult_final_params)
 # makeTimingCurve(adultX,adultY,pipeA,'KNN','adult')

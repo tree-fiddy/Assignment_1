@@ -3,11 +3,10 @@
 Code borrowed from Jonathan Tay
 https://github.com/JonathanTay/CS-7641-assignment-1
 """
-import sklearn.model_selection as ms
-from sklearn.ensemble import AdaBoostClassifier
 import pandas as pd
 from helper_packages.helpers import  basicResults,makeTimingCurve,iterationLC,dtclf_pruned
-from sklearn.ensemble import RandomForestClassifier
+import sklearn.model_selection as ms
+from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.feature_selection import SelectFromModel
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -30,24 +29,36 @@ postureX = posture.drop(['Class','User'],axis=1).copy().values
 postureY = posture['Class'].copy().values
 
 # Create List of Alphas
-alphas = [-1,-1e-3,-(1e-3)*10**-0.5, -1e-2, -(1e-2)*10**-0.5,-1e-1,-(1e-1)*10**-0.5, 0, (1e-1)*10**-0.5,1e-1,(1e-2)*10**-0.5,1e-2,(1e-3)*10**-0.5,1e-3]
+"""
+Alphas
+------
+Output classifier_t weight.  Is a function of the classifiers error rate.
+-   This weight grows exponentially as the error approaches 0. Better classifiers are given
+    exponentially more weight. 
+    
+Learning Rate
+------
+A hyperparameter (regularization parameter) that controls how much we are adjusting the weights of 
+our network/model with respect to the loss gradient.
+    -   The lower the alpha, the slower we travel along the downward slope.
+"""
 
+alphas =
 posture_trgX, posture_tstX, posture_trgY, posture_tstY = ms.train_test_split(postureX, postureY, test_size=0.3, random_state=0,stratify=postureY)
 
 posture_base = dtclf_pruned(criterion='entropy',class_weight='balanced',random_state=55)
 posture_OF_base = dtclf_pruned(criterion='gini',class_weight='balanced',random_state=55)
-#paramsA= {'Boost__n_estimators':[1,2,5,10,20,30,40,50],'Boost__learning_rate':[(2**x)/100 for x in range(8)]+[1]}
-params_posture= {'Boost__n_estimators':[1, 2, 5, 10, 20, 30, 45, 60, 80, 100],
-          'Boost__base_estimator__alpha':alphas}
 
+
+''' Tuning '''
 #paramsM = {'Boost__n_estimators':[1,2,5,10,20,30,40,50,60,70,80,90,100],
 #           'Boost__learning_rate':[(2**x)/100 for x in range(8)]+[1]}
-
-#paramsM = {'Boost__n_estimators':[1,2,5,10,20,30,45,60,80,100],
-           'Boost__base_estimator__alpha':alphas}
-                                   
+params_posture= {'Boost__n_estimators': [1, 2, 5, 10, 20, 30, 45, 60, 80, 100],
+                 'Boost__base_estimator__alpha': [-1, -1e-1, -1e-2, -1e-3,
+                                                  0,                                                  0,
+                                                  1e-3, 1e-2, 1e-1, 1]
+}
          
-#posture_booster = AdaBoostClassifier(algorithm='SAMME',learning_rate=1,base_estimator=posture_base,random_state=55)
 posture_booster = AdaBoostClassifier(algorithm='SAMME',learning_rate=1,base_estimator=posture_base,random_state=55)
 posture_OF_booster = AdaBoostClassifier(algorithm='SAMME',learning_rate=1,base_estimator=posture_OF_base,random_state=55)
 
