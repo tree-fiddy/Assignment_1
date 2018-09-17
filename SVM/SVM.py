@@ -90,7 +90,7 @@ N_posture = posture_trgX.shape[0]
 alphas = [10**-x for x in np.arange(1,9.01,1/2)]
 
 
-# Linear SVM (Parametric)
+""" Linear SVM (Parametric) """
 pipeM = Pipeline([('Scale',StandardScaler()),
                 ('Cull1',SelectFromModel(RandomForestClassifier(random_state=1),threshold='median')),
                 ('Cull2',SelectFromModel(RandomForestClassifier(random_state=2),threshold='median')),
@@ -117,10 +117,7 @@ iterationLC(pipeM,posture_trgX,posture_trgY,posture_tstX,posture_tstY,{'SVM__n_i
 
 
 
-
-
-#
-# #RBF SVM (More Complex.  Non-Parametric)
+"""" Adding Complexity via RBF Kernel (Non-Parametric """
 # gamma_fracsA = np.arange(0.2,2.1,0.2)
 # gamma_fracsM = np.arange(0.05,1.01,0.1)
 #

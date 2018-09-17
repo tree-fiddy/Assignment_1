@@ -302,5 +302,21 @@ Using the figure \ref{fig:kNN Learning Curve k = 10} as a reference (which uses 
 
 
 \section{Boosting}
+Classifying via Boosting on the Hand Posture dataset is a perfect example of the limits of binary boosting algorithms.  Note that the outputs in the graphs show poor predictive performance because hand gestures are labeled 0 through 5, completely disregarding AdaBoost's forte- binary labels.  
 
+Our code 
 \subsection{Learning Curves Analysis}
+
+Increasing the training sample size and our validation sample size (30\% of training) greatly increases the performance of our validation set.  While we only reach a maximum accuracy rate of 84\% in our validation set, we reach about a maximum of 96\%
+\begin{figure} %
+  
+  \centering
+  \subfigure[k = 10] {%
+    \label{fig:kNN Learning Curve k = 10}%
+    \includegraphics[height=2in]{Boosting/output/Boosting_Accuracy_Rates.png}}%
+  \hspace{8pt}%
+  \subfigure[k = 1]{%
+    \label{fig:kNN Learning Curve k = 1}%
+    \includegraphics[height=2in]{KNN/output/kNN_Accuracy_Rates2.png}}
+  \caption{Learning Curves:  Training vs. Validation Accuracy w/ Varying Training Set Size}\label{fig:kNN Learning Curves}
+\end{figure}

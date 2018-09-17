@@ -32,7 +32,7 @@ postureY = posture['Class'].copy().values
 """
 Alphas
 ------
-Output classifier_t weight.  Is a function of the classifiers error rate.
+Output classifier_t weight.  Is a function of the classifiers error rate 1/2 ln((1-e)/e).
 -   This weight grows exponentially as the error approaches 0. Better classifiers are given
     exponentially more weight. 
     
@@ -50,14 +50,7 @@ posture_base = dtclf_pruned(criterion='entropy',class_weight='balanced',random_s
 posture_OF_base = dtclf_pruned(criterion='gini',class_weight='balanced',random_state=55)
 
 
-''' Tuning '''
-#paramsM = {'Boost__n_estimators':[1,2,5,10,20,30,40,50,60,70,80,90,100],
-#           'Boost__learning_rate':[(2**x)/100 for x in range(8)]+[1]}
-params_posture= {'Boost__n_estimators': [1, 2, 5, 10, 20, 30, 45, 60, 80, 100],
-                 'Boost__base_estimator__alpha': [-1, -1e-1, -1e-2, -1e-3,
-                                                  0,                                                  0,
-                                                  1e-3, 1e-2, 1e-1, 1]
-}
+
          
 posture_booster = AdaBoostClassifier(algorithm='SAMME',learning_rate=1,base_estimator=posture_base,random_state=55)
 posture_OF_booster = AdaBoostClassifier(algorithm='SAMME',learning_rate=1,base_estimator=posture_OF_base,random_state=55)
@@ -72,13 +65,23 @@ pipeM = Pipeline([('Scale',StandardScaler()),
 # pipeA = Pipeline([('Scale',StandardScaler()),
 #                  ('Boost',adult_booster)])
 #
+
+''' Tuning '''
+
+# params_posture= {'Boost__n_estimators': [1, 2, 5, 10, 20, 30, 45, 60, 80, 100],
+#                  'Boost__base_estimator__alpha': [-1, -1e-1, -1e-2, -1e-3,
+#                                                   0,                                                  0,
+#                                                   1e-3, 1e-2, 1e-1, 1]}
+
+params_posture = {'Boost__n_estimators':[10],
+          'Boost__learning_rate':[(2**x)/100 for x in range(8)]+[1]}
+
 posture_clf = basicResults(pipeM,posture_trgX,posture_trgY,posture_tstX,posture_tstY,params_posture,'Boost','posture')
 # adult_clf = basicResults(pipeA, adult_trgX, adult_trgY, adult_tstX, adult_tstY, params_posture, 'Boost', 'adult')
 
 #
 #
 #posture_final_params = {'n_estimators': 20, 'learning_rate': 0.02}
-#adult_final_params = {'n_estimators': 10, 'learning_rate': 1}
 #OF_params = {'learning_rate':1}
 
 posture_final_params = posture_clf.best_params_
