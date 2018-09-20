@@ -298,25 +298,89 @@ We can add complexity by altering the distance measure (between Euclidean \& Man
 
 Using the figure \ref{fig:kNN Learning Curve k = 10} as a reference (which uses Uniform Distancing), you can see a subtle, yet important change in the accuracy of our validation set when using Weighted Distance as a hyper-parameter.  Namely, figure \ref{fig:kNN Complexity Manhattan, Weighted Distance} shows decreased performance for almost every training set sample size, reaching a maximum validation accuracy rate of 88\%.  This suggests that Uniform distancing provides better performance, as opposed to discounting data points further away from a test point's nearest neighbor.  Logically, this makes sense- a single instance of a hand gesture is subject to measurement bias.  By discounting all the other finger marker measurements, which also was subjected to measurement bias, we are not letting the model take this type of error into account.  Instead, the distance weighted model is simply placing a higher emphasis on the closest points to make an assessment of hand posture- a misplaced emphasis which most likely took outlier data points from other hand gesture readings, and misclassified our query point as such.  Lastly, it is worth noting that no combination of parameter + hyper-parameter tuning was able to correct the overfitting issue.  My initial hypothesis was to blow up k to 5000 as shown in \ref{fig:kNN Complexity Manhattan, Weighted Distance (k=5000)}, but it didn't do much- it just nearly blew up my laptop.  In fact, it ended up doing worse.
 
-\end{document}
-
-
 \section{Boosting}
-Classifying via Boosting on the Hand Posture dataset is a perfect example of the limits of binary boosting algorithms.  Note that the outputs in the graphs show poor predictive performance because hand gestures are labeled 0 through 5, completely disregarding AdaBoost's forte- binary labels.  
-
-Our code 
+Our code uses the AdaBoost Classifier in sklearn, and uses Decision Trees as weak learners.  We try to find the best model by iterating on different number of estimators (1,2,5,10,20,30,45,60,80,100) and alphas ($-10^{-3}$ to $10^{-3}$). We also iterate on training sample size to see if our model overfits the data, and to find a sufficient training sample size.  In our case, our training accuracy did not converge with the validation set for either data sets.   
 \subsection{Learning Curves Analysis}
 
-Increasing the training sample size and our validation sample size (30\% of training) greatly increases the performance of our validation set.  While we only reach a maximum accuracy rate of 84\% in our validation set, we reach about a maximum of 96\%
+\textbf{Hand Posture Data}
+In Figure \ref{fig: Boosting Learning Curve alpha = 0}, we see that increasing the training sample size and our validation sample size (30\% of training) greatly increases the performance of our validation set.  While we only reach a maximum accuracy rate of 84\% in our validation set, we reach about a maximum of 96\% in our training set.  Furthermore, the learning rates do not converge, suggesting overfitting.
+
+To fine tune our model, I wanted to explore the different values of alpha, which act as weights for each successive correct \& incorrect classification.  Figure \ref{fig: Boosting Learning Curve alpha = -1} shows a deliberate attempt to overfit, and we can see that this learning curve does not differ much at all from the previous.  Thus, it's clear that Ensemble methods do not work well with our Hand Posture dataset.  
+
+\textbf{Credit Approval Data}
+Insert Later
+
+\begin{figure} %
+  \centering
+  \subfigure[n\_estimators = 10] {%
+    \label{fig:Boosting Learning Curve alpha = 0}%
+    \includegraphics[height=2in]{Boosting/output/Boost_Accuracy_Rates.png}}%
+  \hspace{8pt}%
+  \subfigure[n\_estimators = 10]{%
+    \label{fig:Boosting Learning Curve alpha = -1}%
+    \includegraphics[height=2in]{Boosting/output/Boosting_Accuracy_Rates2.png}}
+  \caption{Learning Curves:  Training vs. Validation Accuracy w/ Varying Training Set Size}\label{fig:Boosting Learning Curves}
+\end{figure}
+
+\subsection{Model Complexity Analysis}
+\textbf{Hand Posture Data}  To assess the impact of our hyperparamters, I adjust the alpha to -1, learning rate to 0.02, and increase the number of estimators to 20.  Figure \ref{fig: Boosting w/ Hyperparameters 1} shows no discernable difference between the previous two results, which could be due to being ``stuck'' at a local minima and not finding the global minima of the loss function in the gradient descent step.  However, even after setting the learning rate hyper parameter to an exaggerated number (100) yielded similar results, as shown in \ref{fig:Boosting w/ Hyperparameters 2}.
+
+\textbf{Credit Approval Data}
+
+\begin{figure} %
+  \centering
+  \subfigure[alpha = -1, n\_est = 20, learning rate = 0.02] {%
+    \label{fig: Boosting w/ Hyperparameters 1}%
+    \includegraphics[height=1.9in]{Boosting/output/Boosting_Accuracy_Rates3.png}}%
+  \hspace{8pt}%
+  \subfigure[alpha = -1, n\_est = 20, learning rate = 100]{%
+    \label{fig:Boosting w/ Hyperparameters 2}%
+    \includegraphics[height=1.9in]{Boosting/output/Boosting_Accuracy_Rates4.png}}
+  \caption{Learning Curves:  Training vs. Validation Sets w/ Varying Learning Rate}\label{fig:Boosting Model Complexity Curves}
+\end{figure}
+
+
+\section{SVM}
+We run an SVM model twice- A linear SVM to start, and then an SVM with a RBF kernel for each data set.
+
+\subsection{Learning Curves Analysis}
+
+\textbf{Hand Posture Data}
+In Figure \ref{fig: Linear SVM Learning Curve}, we see that the model performed very poorly.  To start, our training data just barely reaches 50\% accuracy.  A large part of this results is due to the high dimensional nature of our data.  Our SVM is drawing the best fit line amongst all dimensions, and it is NOT able to reasonably classify the given data points.  This is further evidenced by tuning alpha, which is a regularization parameter that will aid in misclassifications (lower the value, the ``broader the street'').  However, according to \ref{fig: Linear SVM Learning Curve 2} even with an alpha of 0.0001, our results did not improve that much.  
+
+\textbf{Credit Approval Data}
+
 \begin{figure} %
   
   \centering
-  \subfigure[k = 10] {%
-    \label{fig:kNN Learning Curve k = 10}%
-    \includegraphics[height=2in]{Boosting/output/Boosting_Accuracy_Rates.png}}%
+  \subfigure[alpha = 1] {%
+    \label{fig:Linear SVM Learning Curve}%
+    \includegraphics[height=2in]{SVM/output/SVM_Accuracy_Rates.png}}%
   \hspace{8pt}%
-  \subfigure[k = 1]{%
-    \label{fig:kNN Learning Curve k = 1}%
-    \includegraphics[height=2in]{KNN/output/kNN_Accuracy_Rates2.png}}
-  \caption{Learning Curves:  Training vs. Validation Accuracy w/ Varying Training Set Size}\label{fig:kNN Learning Curves}
+  \subfigure[alpha = 0.0001]{%
+    \label{fig:Boosting Learning Curve 2}%
+    \includegraphics[height=2in]{SVM/output/SVM_Accuracy_Rates2.png}}
+  \caption{Learning Curves:  Training vs. Validation Accuracy w/ Varying Training Set Size}\label{fig:SVM Learning Curves}
 \end{figure}
+
+\subsection{Model Complexity Analysis}
+\textbf{Hand Posture Data}  We can resort to using an SVM with RBF kernel, instead of a linear SVM to dissect our high dimensional data.  However, this comes at the expense of \textbf{very} large computation times.  Figure \ref{fig: SVM 1)} shows a reasonably well accuracy, with hyperparameters gamma = 10, and alpha = 0.001.  The mere presence of an RBF kernel drastically improved our model, and adjusting how much each data point contributes to the formation of a decision boundry (gamma) allows us to squeeze out more accurate classifications, as shown in Figure \ref{fig: SVM 2}.  
+
+as compared to \ref{fig:Boosting w/ Default Learning Rate (=1)}
+
+\textbf{Credit Approval Data}
+
+\begin{figure} %
+  \centering
+  \subfigure[Gamma = 10, alpha = 0.001] {%
+    \label{fig:SVM 1}%
+    \includegraphics[height=1.9in]{Boosting/output/Boosting_Accuracy_Rates3.png}}%
+  \hspace{8pt}%
+  \subfigure[Gamma = 1000, alpha = 0.001]{%
+    \label{fig:SVM 2}%
+    \includegraphics[height=1.9in]{Boosting/output/Boosting_Accuracy_Rates4.png}}
+  \caption{Learning Curves:  Training vs. Validation Sets w/ Varying Learning Rate}\label{fig:Boosting Model Complexity Curves}
+\end{figure}
+
+
+\end{document}

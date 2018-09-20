@@ -11,8 +11,8 @@ from sklearn.feature_selection import SelectFromModel
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-## Hand Gesture Data
-csv = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/00391/allUsers.lcl.csv')
+'''Hand Gesture Data'''
+csv = pd.read_csv('../data/hand_posture.csv', sep=',', header=0)
 csv.replace('?', 0, inplace=True)
 
 # Only the first 5 vars get converted to float (others being kept as 'object')
@@ -28,12 +28,13 @@ posture = posture.iloc[1:]
 postureX = posture.drop(['Class','User'],axis=1).copy().values
 postureY = posture['Class'].copy().values
 
+
 # Create List of Alphas
 """
 Alphas
 ------
 Output classifier_t weight.  Is a function of the classifiers error rate 1/2 ln((1-e)/e).
--   This weight grows exponentially as the error approaches 0. Better classifiers are given
+-   This weight grows exponentially as the error approaches 0 from the right. Better classifiers are given
     exponentially more weight. 
     
 Learning Rate
@@ -42,8 +43,6 @@ A hyperparameter (regularization parameter) that controls how much we are adjust
 our network/model with respect to the loss gradient.
     -   The lower the alpha, the slower we travel along the downward slope.
 """
-
-alphas =
 posture_trgX, posture_tstX, posture_trgY, posture_tstY = ms.train_test_split(postureX, postureY, test_size=0.3, random_state=0,stratify=postureY)
 
 posture_base = dtclf_pruned(criterion='entropy',class_weight='balanced',random_state=55)
@@ -66,34 +65,34 @@ pipeM = Pipeline([('Scale',StandardScaler()),
 #                  ('Boost',adult_booster)])
 #
 
-''' Tuning '''
+''' Learning Curve Tuning '''
 
+''' 1.  Best Params: alpha = 0, n_estimators = 10'''
 # params_posture= {'Boost__n_estimators': [1, 2, 5, 10, 20, 30, 45, 60, 80, 100],
 #                  'Boost__base_estimator__alpha': [-1, -1e-1, -1e-2, -1e-3,
 #                                                   0,                                                  0,
 #                                                   1e-3, 1e-2, 1e-1, 1]}
 
-params_posture = {'Boost__n_estimators':[10],
-          'Boost__learning_rate':[(2**x)/100 for x in range(8)]+[1]}
+''' 2. Diff. Alpha (-1), n_estimators, and learning rates'''
+params_posture = {'Boost__n_estimators':[20],
+                  'Boost__base_estimator__alpha':[-1],
+                  'Boost__learning_rate': [0.02, 0.2, 0.5]}
 
 posture_clf = basicResults(pipeM,posture_trgX,posture_trgY,posture_tstX,posture_tstY,params_posture,'Boost','posture')
 # adult_clf = basicResults(pipeA, adult_trgX, adult_trgY, adult_tstX, adult_tstY, params_posture, 'Boost', 'adult')
 
-#
-#
-#posture_final_params = {'n_estimators': 20, 'learning_rate': 0.02}
-#OF_params = {'learning_rate':1}
 
-posture_final_params = posture_clf.best_params_
-# adult_final_params = adult_clf.best_params_
-OF_params = {'Boost__base_estimator__alpha':-1, 'Boost__n_estimators':50}
 
-##
+
+posture_final_params = {'Boost__n_estimators': 50, 'Boost__learning_rate': 0.02}
+# posture_final_params = posture_clf.best_params_
 pipeM.set_params(**posture_final_params)
-# pipeA.set_params(**adult_final_params)
+
+#OF_params = {'learning_rate':1}
+OF_params = {'Boost__base_estimator__alpha':-1, 'Boost__n_estimators':50}
 makeTimingCurve(postureX,postureY,pipeM,'Boost','posture')
-# makeTimingCurve(adultX,adultY,pipeA,'Boost','adult')
-#
+
+
 pipeM.set_params(**posture_final_params)
 iterationLC(pipeM,posture_trgX,posture_trgY,posture_tstX,posture_tstY,{'Boost__n_estimators':[1,2,5,10,20,30,40,50,60,70,80,90,100]},'Boost','posture')
 # pipeA.set_params(**adult_final_params)
