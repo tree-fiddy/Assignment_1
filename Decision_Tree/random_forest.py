@@ -111,11 +111,12 @@ def main():
     X = list()
     y = list()
     XX = list()  # Contains data features and data labels
-    numerical_cols = set(np.arange(1,38,1)) # indices of numeric attributes (columns)
+    numerical_cols = set([1, 2, 7, 10, 13, 14, 15])  # indices of numeric attributes (columns)
 
     # Loading data set
-    print 'reading hw4-data'
-    with open("../data/hand_posture.csv") as f:
+    print
+    'reading data'
+    with open("../data/cc_approval.csv") as f:
         next(f, None)
 
         for line in csv.reader(f, delimiter=","):

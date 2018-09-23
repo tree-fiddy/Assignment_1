@@ -19,6 +19,7 @@ from sklearn.metrics.pairwise import rbf_kernel
 from sklearn.linear_model import SGDClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SelectFromModel
+from sklearn import preprocessing
 
 class primalSVM_RBF(BaseEstimator, ClassifierMixin):
     """http://scikit-learn.org/stable/developers/contributing.html"""
@@ -65,6 +66,17 @@ class primalSVM_RBF(BaseEstimator, ClassifierMixin):
          pred = self.clf.predict(new_kernels)
          return pred
 
+''' Credit Card Data'''
+filename = '/tmp/credit_data.h5'
+le = preprocessing.LabelEncoder()
+
+csv = pd.read_csv('../data/cc_approval.csv')
+csv = csv.apply(le.fit_transform)
+df = csv.to_hdf(filename, 'data', mode='w', format='table')
+
+approved = pd.read_hdf('/tmp/credit_data.h5')
+approvedX = approved.drop('A16',1).copy().values
+approvedY = approved['A16'].copy().values
 
 '''Hand Gesture Data'''
 csv = pd.read_csv('../data/hand_posture.csv', sep=',', header=0)
@@ -83,21 +95,28 @@ posture = posture.iloc[1:]
 postureX = posture.drop(['Class'],axis=1).copy().values
 postureY = posture['Class'].copy().values
 
+approved_trgX, approved_tstX, approved_trgY, approved_tstY = ms.train_test_split(approvedX, approvedY, test_size=0.2, random_state=0,stratify=approved['A16'])
+N_approved = approved_trgX.shape[0]
 posture_trgX, posture_tstX, posture_trgY, posture_tstY = ms.train_test_split(postureX, postureY, test_size=0.3, random_state=0,stratify=postureY)
+N_posture = posture_trgX.shape[0]
 
-# N_posture = posture_trgX.shape[0]
+# #
+# # """ Linear SVM (Parametric) """
+# pipeA = Pipeline([('Scale',StandardScaler()),
+#                   ('SVM',SGDClassifier(loss='hinge',l1_ratio=0,penalty='l2',class_weight='balanced',random_state=55))])
+
+# # pipeM = Pipeline([('Scale',StandardScaler()),
+# #                 ('Cull1',SelectFromModel(RandomForestClassifier(random_state=1),threshold='median')),
+# #                 ('Cull2',SelectFromModel(RandomForestClassifier(random_state=2),threshold='median')),
+# #                 ('Cull3',SelectFromModel(RandomForestClassifier(random_state=3),threshold='median')),
+# #                 ('Cull4',SelectFromModel(RandomForestClassifier(random_state=4),threshold='median')),
+# #                 ('SVM',SGDClassifier(loss='hinge',l1_ratio=0,penalty='l2',class_weight='balanced',random_state=55))])
 #
-# """ Linear SVM (Parametric) """
-# pipeM = Pipeline([('Scale',StandardScaler()),
-#                 ('Cull1',SelectFromModel(RandomForestClassifier(random_state=1),threshold='median')),
-#                 ('Cull2',SelectFromModel(RandomForestClassifier(random_state=2),threshold='median')),
-#                 ('Cull3',SelectFromModel(RandomForestClassifier(random_state=3),threshold='median')),
-#                 ('Cull4',SelectFromModel(RandomForestClassifier(random_state=4),threshold='median')),
-#                 ('SVM',SGDClassifier(loss='hinge',l1_ratio=0,penalty='l2',class_weight='balanced',random_state=55))])
+# params_approved = {'SVM__alpha':[100, 10, 1, 0.1, 0.001, 0.0001]}
+# # params_posture = {'SVM__alpha':[100, 10, 1, 0.1, 0.001, 0.0001]}
 #
-# params_posture = {'SVM__alpha':[100, 10, 1, 0.1, 0.001, 0.0001]}
-#
-# posture_clf = basicResults(pipeM,posture_trgX,posture_trgY,posture_tstX,posture_tstY,params_posture,'SVM_Lin','posture')
+# approved_clf = basicResults(pipeA,approved_trgX,approved_trgY,approved_tstX,approved_tstY,params_approved,'SVM_Lin','approved')
+# # posture_clf = basicResults(pipeM,posture_trgX,posture_trgY,posture_tstX,posture_tstY,params_posture,'SVM_Lin','posture')
 #
 # posture_final_params = {'SVM__alpha': 0.0001}
 # # posture_final_params = posture_clf.best_params_
@@ -115,40 +134,38 @@ posture_trgX, posture_tstX, posture_trgY, posture_tstY = ms.train_test_split(pos
 """" Adding Complexity via RBF Kernel (Non-Parametric)"""
 gamma_fracsM = np.arange(0.1,1,10)
 
-#
 pipeM = Pipeline([('Scale',StandardScaler()),
                  ('Cull1',SelectFromModel(RandomForestClassifier(random_state=1),threshold='median')),
                  ('Cull2',SelectFromModel(RandomForestClassifier(random_state=2),threshold='median')),
-                 ('Cull3',SelectFromModel(RandomForestClassifier(random_state=3),threshold='median')),
-                 ('Cull4',SelectFromModel(RandomForestClassifier(random_state=4),threshold='median')),
-                 ('SVM',primalSVM_RBF())])
+                    ('SVM',primalSVM_RBF())])
 
 pipeA = Pipeline([('Scale',StandardScaler()),
                  ('SVM',primalSVM_RBF())])
 
+params_approved = {'SVM__alpha':[0.1, 0.01, 0.001],'SVM__gamma_frac':gamma_fracsM}
 params_posture = {'SVM__alpha':[0.1, 0.01, 0.001],'SVM__gamma_frac':gamma_fracsM}
-#
+approved_clf = basicResults(pipeA,approved_trgX,approved_trgY,approved_tstX,approved_tstY,params_approved,'SVM_RBF','approved')
 posture_clf = basicResults(pipeM,posture_trgX,posture_trgY,posture_tstX,posture_tstY,params_posture,'SVM_RBF','posture')
 
 posture_final_params = posture_clf.best_params_
 posture_OF_params = posture_final_params.copy()
 posture_OF_params['SVM__alpha'] = 1e-16
-adult_final_params =adult_clf.best_params_
-adult_OF_params = adult_final_params.copy()
-adult_OF_params['SVM__alpha'] = 1e-16
+approved_final_params =approved_clf.best_params_
+approved_OF_params = approved_final_params.copy()a
+approved_OF_params['SVM__alpha'] = 1e-16
 
 pipeM.set_params(**posture_final_params)
 makeTimingCurve(postureX,postureY,pipeM,'SVM_RBF','posture')
-pipeA.set_params(**adult_final_params)
-makeTimingCurve(adultX,adultY,pipeM,'SVM_RBF','adult')
+pipeA.set_params(**approved_final_params)
+makeTimingCurve(approvedX,approvedY,pipeM,'SVM_RBF','approved')
 
 
 pipeM.set_params(**posture_final_params)
 iterationLC(pipeM,posture_trgX,posture_trgY,posture_tstX,posture_tstY,{'SVM__n_iter':[2**x for x in range(12)]},'SVM_RBF','posture')
-pipeA.set_params(**adult_final_params)
-iterationLC(pipeA,adult_trgX,adult_trgY,adult_tstX,adult_tstY,{'SVM__n_iter':np.arange(1,75,3)},'SVM_RBF','adult')
+pipeA.set_params(**approved_final_params)
+iterationLC(pipeA,approved_trgX,approved_trgY,approved_tstX,approved_tstY,{'SVM__n_iter':np.arange(1,75,3)},'SVM_RBF','approved')
 
-pipeA.set_params(**adult_OF_params)
-iterationLC(pipeA,adult_trgX,adult_trgY,adult_tstX,adult_tstY,{'SVM__n_iter':np.arange(1,75,3)},'SVM_RBF_OF','adult')
+pipeA.set_params(**approved_OF_params)
+iterationLC(pipeA,approved_trgX,approved_trgY,approved_tstX,approved_tstY,{'SVM__n_iter':np.arange(1,75,3)},'SVM_RBF_OF','approved')
 pipeM.set_params(**posture_OF_params)
 iterationLC(pipeM,posture_trgX,posture_trgY,posture_tstX,posture_tstY,{'SVM__n_iter':np.arange(100,2600,100)},'SVM_RBF_OF','posture')

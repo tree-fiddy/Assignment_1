@@ -48,9 +48,6 @@ posture_trgX, posture_tstX, posture_trgY, posture_tstY = ms.train_test_split(pos
 posture_base = dtclf_pruned(criterion='entropy',class_weight='balanced',random_state=55)
 posture_OF_base = dtclf_pruned(criterion='gini',class_weight='balanced',random_state=55)
 
-
-
-         
 posture_booster = AdaBoostClassifier(algorithm='SAMME',learning_rate=1,base_estimator=posture_base,random_state=55)
 posture_OF_booster = AdaBoostClassifier(algorithm='SAMME',learning_rate=1,base_estimator=posture_OF_base,random_state=55)
 
@@ -80,9 +77,6 @@ params_posture = {'Boost__n_estimators':[20],
 
 posture_clf = basicResults(pipeM,posture_trgX,posture_trgY,posture_tstX,posture_tstY,params_posture,'Boost','posture')
 # adult_clf = basicResults(pipeA, adult_trgX, adult_trgY, adult_tstX, adult_tstY, params_posture, 'Boost', 'adult')
-
-
-
 
 posture_final_params = {'Boost__n_estimators': 50, 'Boost__learning_rate': 0.02}
 # posture_final_params = posture_clf.best_params_

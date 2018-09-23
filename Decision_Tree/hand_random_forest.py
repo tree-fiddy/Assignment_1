@@ -111,24 +111,24 @@ def main():
     X = list()
     y = list()
     XX = list()  # Contains data features and data labels
-    numerical_cols = set([1, 2, 7, 10, 13, 14, 15])  # indices of numeric attributes (columns)
+    numerical_cols = set(list(range(1,38,1))) # indices of numeric attributes (columns)
 
     # Loading data set
-    print
-    'reading hw4-data'
-    with open("hw4-data.csv") as f:
+    print 'reading data'
+    with open("../data/hand_posture.csv") as f:
         next(f, None)
 
         for line in csv.reader(f, delimiter=","):
             xline = []
             for i in range(len(line)):
                 if i in numerical_cols:
-                    xline.append(ast.literal_eval(line[i]))
-                else:
-                    xline.append(line[i])
+                    if isinstance(i, (float,int)):
+                        xline.append(line[i])
+                    else:
+                        continue
 
-            X.append(xline[:-1])
-            y.append(xline[-1])
+            X.append(xline[1:])
+            y.append(xline[1])
             XX.append(xline[:])
 
     # TODO: Initialize according to your implementation
